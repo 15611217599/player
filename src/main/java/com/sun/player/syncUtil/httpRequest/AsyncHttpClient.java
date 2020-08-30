@@ -132,8 +132,6 @@ public class AsyncHttpClient {
         urls.remove(baseUrl);
         HttpGet httpGet = new HttpGet(baseUrl + url);
 
-        httpGet.setHeader(":authority", "wolongzy.net");
-        httpGet.setHeader(":method", "GET");
         httpGet.setHeader(":path", "/");
         httpGet.setHeader(":scheme", "https");
         httpGet.setHeader(":accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
@@ -142,7 +140,6 @@ public class AsyncHttpClient {
         httpGet.setHeader("accept-language", "zh-CN,zh;q=0.9");
         httpGet.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.116 Safari/537.36");
         httpGet.setHeader("cache-control", "max-age=0");
-        httpGet.setHeader("cookie", "PHPSESSID=01s44etqv6r7u32lvkq6n4p111; Hm_lvt_5264ef815f471ca9f4cb4d116d3b3f3c=1582273993,1582297508,1582363946; Hm_lpvt_5264ef815f471ca9f4cb4d116d3b3f3c=1582379561");
         httpGet.setHeader("sec-fetch-dest", "document");
         httpGet.setHeader("sec-fetch-mode", "navigate");
         httpGet.setHeader(":sec-fetch-site", "none");

@@ -40,23 +40,31 @@ public class ParseXml {
         List<VideoCategory> list = new ArrayList<>();
         try {
             Document document = Jsoup.parse(html);
-            Elements pages = document.getElementsByClass("index_list_foot");
+            Elements pages = document.getElementsByClass("pages");
 
             //找到当前地址
             String url = "";
             Element element = pages.get(0);
+            /*共9857条数据 当前:1/198页 首页 上一页 1 2 3 4 5 6 下一页 尾页*/
+            String text = element.text();
 
-            Elements li1 = element.getElementsByTag("li");
-            Element element1 = li1.get(2);
+            String[] split = text.split("当前:");
+            String[] ye = split[1].split("页");
+            String s = ye[0];
+            String[] split1 = s.split("/");
+
+            Elements a = element.getElementsByTag("a");
+            url = a.get(0).attr("href");
+           /* Element element1 = a.get(2);
             url = element1.getElementsByTag("a").get(0).attr("href");
             Element element2 = li1.get(li1.size() - 2);
             String attr = element2.getElementsByTag("a").get(0).attr("href");
-            String[] split = attr.split("page=");
+            String[] split = attr.split("page=");*/
             //一页有50条
-            int pageSize = (Integer.parseInt(split[1]));
+            int pageSize = (Integer.parseInt(split1[1]));
             for (int i = 1; i <= pageSize + 1; i++) {
                 VideoCategory videoCategory = new VideoCategory();
-                url = url.replaceAll("page=\\d+","page="+i);
+                url = url.replaceAll("pg-\\d+", "pg-" + i);
                 videoCategory.setUrl(url);
                 list.add(videoCategory);
             }
@@ -101,7 +109,7 @@ public class ParseXml {
             int pageSize = (Integer.parseInt(strong) / 50);
             for (int i = 1; i <= pageSize + 1; i++) {
                 VideoCategory videoCategory = new VideoCategory();
-                url = url.replaceAll("page=\\d+","page="+i);
+                url = url.replaceAll("page=\\d+", "page=" + i);
                 videoCategory.setUrl(url);
                 list.add(videoCategory);
             }
@@ -124,14 +132,13 @@ public class ParseXml {
 
         try {
             Document document = Jsoup.parse(html);
-            Elements videoContent = document.getElementsByClass("videoContent");
-            Elements allElements = videoContent.get(0).getElementsByTag("li");
+            Elements videoContent = document.getElementsByClass("xing_vb4");
 
-            for (int i = 0; i < allElements.size(); i++) {
+            for (int i = 0; i < videoContent.size(); i++) {
 
                 VideoCategory videoCategory = new VideoCategory();
 
-                String href = allElements.get(i).getElementsByTag("a").get(1).attr("href");
+                String href = videoContent.get(i).getElementsByTag("a").get(0).attr("href");
                 if (!StringUtils.isEmpty(href.trim())) {
                     videoCategory.setUrl(href);
                     list.add(videoCategory);
@@ -160,37 +167,37 @@ public class ParseXml {
             //下载地址
             List<String> downUrl = new ArrayList<>();
             //影片名
-            String name="";
+            String name = "";
             //影片图片
-            String picture="";
+            String picture = "";
             //别名
-            String otherName="";
+            String otherName = "";
             //导演
-            String director="";
+            String director = "";
             //主演
-            String actors="";
+            String actors = "";
             //地区
-            String area="";
+            String area = "";
             //语言
-            String language="";
+            String language = "";
             //上映时间
             Integer releaseTime = 2000;
             //片长
-            String filmLength="";
+            String filmLength = "";
             //更新日期
             Timestamp updatedTime = new Timestamp(System.currentTimeMillis());
             //总播放量
             String totalPlayTimes = "1";
             //今日播放量
-            String todayPlayTimes="1";
+            String todayPlayTimes = "1";
             //总评分
-            String totalScore ="1";
+            String totalScore = "1";
             //评分次数
-            String scoresNum="1";
+            String scoresNum = "1";
             //影片简介
             String filmSynopsis;
             //显示评分
-            String showScore="";
+            String showScore = "";
             //更新至--或者是影片清晰度
             String newInfo;
 
@@ -198,152 +205,132 @@ public class ParseXml {
                 Document document = Jsoup.parse(html);
 
                 //获取id and pid
-                Elements nvc = document.getElementsByClass("list-nav");
+                Elements nvc = document.getElementsByClass("nvc");
                 Elements a = nvc.get(0).getElementsByTag("a");
-                String href = a.get(a.size()-1).attr("href");
+                String href = a.get(1).attr("href");
                 String[] split = href.split(".html");
-                int i = split[0].lastIndexOf("/");
+                int i = split[0].lastIndexOf("-");
                 pid = split[0].substring(i + 1);
 
                 String[] split1 = key.split(".html");
-                int i1 = split1[0].lastIndexOf("/");
+                int i1 = split1[0].lastIndexOf("-");
                 id = split1[0].substring(i1 + 1);
 
 
-
-                Elements vodh = document.getElementsByClass("width1200 white");
+                Elements vodh = document.getElementsByClass("vodh");
                 Element element = vodh.get(0);
 
 
                 //picture
-                String attr =  element.getElementsByClass("whitetitle").get(0).text().trim();
-                String s = attr.split("名称：")[1];
-                String[] split2 = s.split("\\[");
-                name = split2[0];
-                newInfo = "";
-                if (split2.length>1){
-                    newInfo = split2[1].substring(0,split2[1].length()-1);
-                }
+                name = vodh.get(0).getElementsByTag("h2").get(0).getAllElements().get(0).text();
+                newInfo = vodh.get(0).getElementsByTag("span").get(0).getAllElements().get(0).text();
 
-                picture =  element.getElementsByClass("left").get(0).getElementsByTag("img").attr("src");
+                picture = document.getElementsByClass("vodImg").get(0).getElementsByTag("img").get(0).getAllElements().get(0).attr("src");
 
-                Elements right = element.getElementsByClass("right");
-                Elements span = right.get(0).getElementsByTag("p");
+                Elements right = document.getElementsByClass("vodinfobox");
+                Elements span = right.get(0).getElementsByTag("li");
                 for (Element element1 : span) {
-                    if (element1.text().contains("导演：")){
-                        String[] split3 = element1.text().split("导演：");
-                        if (split3.length>1){
-                            director = split3[1];
-                        }
-                    }else if (element1.text().contains("演员：")){
-                        String[] split3 = element1.text().split("演员：");
-                        if (split3.length>1){
-                            actors = split3[1];
-                        }
-                    }else if (element1.text().contains("别名：")){
-                        String[] split3 = element1.text().split("别名：");
-                        if (split3.length>1){
-                            otherName = split3[1];
-                        }
-                    }else if (element1.text().contains("地区：")){
-                        String[] split3 = element1.text().split("地区：");
-                        if (split3.length>1){
-                            area = split3[1];
-                        }
-                    }else if (element1.text().contains("语言：")){
-                        String[] split3 = element1.text().split("语言：");
-                        if (split3.length>1){
-                            language = split3[1];
-                        }
-                    }else if (element1.text().contains("上映：")){
-                        String[] split3 = element1.text().split("上映：");
-                        if (split3.length>1){
-                            if (split3[1] != null && split3[1].trim().length() > 0) {
-                                try {
-                                    releaseTime = Integer.parseInt(split3[1]);
+                    if (element1.text().contains("导演：")) {
+                        String split3 = element1.getElementsByTag("span").get(0).text();
+                        director = split3;
+                    } else if (element1.text().contains("演员：")) {
 
-                                    int i2 = Calendar.getInstance().get(Calendar.YEAR);
-                                    if (releaseTime > i2) {
-                                        releaseTime = i2;
-                                    }
-                                } catch (NumberFormatException e) {
-                                    releaseTime = 2000;
-                                    log.info("日期转换错误" + split3[1]);
-                                }
-                            } else {
-                                releaseTime = 2000;
-                            }
+                        String split3 = element1.getElementsByTag("span").get(0).text();
+                        actors = split3;
+                    } else if (element1.text().contains("别名：")) {
+                        String split3 = element1.getElementsByTag("span").get(0).text();
+                        otherName = split3;
+
+                    } else if (element1.text().contains("地区：")) {
+
+                        String split3 = element1.getElementsByTag("span").get(0).text();
+                        area = split3;
+                    } else if (element1.text().contains("语言：")) {
+
+                        String split3 = element1.getElementsByTag("span").get(0).text();
+                        language = split3;
+                    } else if (element1.text().contains("上映：")) {
+                        String split3 = element1.getElementsByTag("span").get(0).text();
+                        try {
+                            releaseTime = Integer.valueOf(split3);
+
+                        } catch (Exception e) {
+                            releaseTime = 2000;
                         }
-                    }else if (element1.text().contains("片长：")){
-                        String[] split3 = element1.text().split("片长：");
-                        if (split3.length>1){
-                            filmLength = split3[1];
-                        }
-                    }else if (element1.text().contains("更新时间：")){
-                        String[] split3 = element1.text().split("更新时间：");
-                        if (split3.length>1){
-                            if (split3[1] != null && split3[1].trim().length() > 0) {
-                                try {
+                    } else if (element1.text().contains("片长：")) {
+                        String split3 = element1.getElementsByTag("span").get(0).text();
+                        filmLength = split3;
+                    } else if (element1.text().contains("更新时间：")) {
+                        String split3 = element1.getElementsByTag("span").get(0).text();
 
-                                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //使用了默认的格式创建了一个日期格式化对象。
-                                    updatedTime = new Timestamp(dateFormat.parse(split3[1]).getTime());
 
-                                } catch (NumberFormatException e) {
-                                    updatedTime = new Timestamp(System.currentTimeMillis());
-                                    log.info("日期格式化错误" + split3[1]);
-                                }
-                            } else {
-
+                        if (split3 != null && split3.trim().length() > 0) {
+                            try {
                                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //使用了默认的格式创建了一个日期格式化对象。
-                                String string = "2000年01月01日 00:00:00";
-                                updatedTime = new Timestamp(dateFormat.parse(string).getTime());
+                                updatedTime = new Timestamp(dateFormat.parse(split3).getTime());
 
+                            } catch (NumberFormatException e) {
+                                updatedTime = new Timestamp(System.currentTimeMillis());
+                                log.info("日期格式化错误" + split3);
                             }
+                        } else {
+
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //使用了默认的格式创建了一个日期格式化对象。
+                            String string = "2000年01月01日 00:00:00";
+                            updatedTime = new Timestamp(dateFormat.parse(string).getTime());
+
                         }
                     }
-
-
-
                 }
 
-
-                filmSynopsis = "";
-                Element element1 = vodh.get(1);
-                Elements div = element1.getElementsByTag("div");
-                Elements allElements = div.get(1).getAllElements();
-
-                List<Node> nodes = allElements.get(0).childNodes();
-                String string = nodes.get(1).toString();
-                filmSynopsis = string;
+                filmSynopsis = document.getElementsByClass("vodplayinfo").get(0).text();
 
                 //播放下载地址
                 try {
-
                     //有两个id 1 和2 但是不一定哪个才是m3u8,所以判断一下
 
-                    Elements playlist_wbox = document.getElementsByClass("playlist wbox");
-                    Element element3 = playlist_wbox.get(0);
-                    Elements li = element3.getElementsByTag("li");
+                    Elements playlist_wbox = document.getElementsByClass("ibox playBox");
+                    Element element3 = playlist_wbox.get(1);
+                    Elements suf = element3.getElementsByClass("suf");
 
-                    for (Element element2 : li) {
-                        Element m3u8 = element2.getElementById("m3u8");
-                        lookUrl.add(m3u8.attr("value"));
+                    for (Element element1 : suf) {
+
+                        if ("zuidam3u8".equals(element1.text())) {
+                            Element element2 = element1.parent().nextElementSibling();
+                            for (Element li : element2.getElementsByTag("li")) {
+                                Element m3u8 = li.getElementsByTag("input").get(0);
+                                lookUrl.add(m3u8.attr("value"));
+                            }
+                        }
                     }
+
                 } catch (Exception e) {
 
                 }
 
-                /*try {
-                    Element play_1 = document.getElementById("down_1");
-                    Elements ul = play_1.getElementsByTag("ul").get(0).getElementsByTag("li");
-                    for (Element element2 : ul) {
-                        List<TextNode> textNodes1 = element2.textNodes();
-                        String text = textNodes1.get(0).text();
-                        downUrl.add(text);
+                //播放下载地址
+                try {
+                    //有两个id 1 和2 但是不一定哪个才是m3u8,所以判断一下
+
+                    Elements playlist_wbox = document.getElementsByClass("ibox playBox");
+                    Element element3 = playlist_wbox.get(2);
+                    Elements suf = element3.getElementsByClass("suf");
+
+                    for (Element element1 : suf) {
+
+                        if ("迅雷下载".equals(element1.text())) {
+                            Element element2 = element1.parent().nextElementSibling();
+                            for (Element li : element2.getElementsByTag("li")) {
+                                Element m3u8 = li.getElementsByTag("input").get(0);
+                                downUrl.add(m3u8.attr("value"));
+                            }
+                        }
                     }
+
                 } catch (Exception e) {
 
-                }*/
+                }
+
 
                 video.setActors(actors);
                 video.setArea(area);
@@ -403,9 +390,9 @@ public class ParseXml {
 
             try {
                 title_text = element1.getElementsByClass("title_text").get(0).text();
-                if (title_text.contains("·")){
+                if (title_text.contains("·")) {
                     int i = title_text.indexOf("·");
-                    title_text = title_text.substring(0,i);
+                    title_text = title_text.substring(0, i);
                 }
             } catch (Exception e) {
 
@@ -415,7 +402,7 @@ public class ParseXml {
         }
 
         for (String name : names) {
-            getVideoListByName(name,lists,4);
+            getVideoListByName(name, lists, 4);
         }
 
 
@@ -446,14 +433,14 @@ public class ParseXml {
 
                 boolean isContains = false;
                 for (String name : names) {
-                    if (name.contains(text) || text.contains(name)){
+                    if (name.contains(text) || text.contains(name)) {
                         isContains = true;
                     }
                 }
                 if (isContains)
                     continue;
 
-                getVideoListByName(text,lists1,i);
+                getVideoListByName(text, lists1, i);
                 lists.addAll(lists1);
                 lists1.clear();
             }
@@ -461,14 +448,13 @@ public class ParseXml {
         }
 
 
-
         return lists;
 
     }
 
-    public void getVideoListByName(String name,List<VideoList> lists,int i){
+    public void getVideoListByName(String name, List<VideoList> lists, int i) {
 
-        Optional<List<VideoList>> byNameLike = videoListRep.findByNameLikeAndPidNot("%" + name + "%","-1");
+        Optional<List<VideoList>> byNameLike = videoListRep.findByNameLikeAndPidNot("%" + name + "%", "-1");
         if (byNameLike.isPresent()) {
 
             VideoList videoList = byNameLike.get().get(0);

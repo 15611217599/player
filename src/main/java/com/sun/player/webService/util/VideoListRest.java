@@ -166,7 +166,7 @@ public class VideoListRest {
     @RequestMapping(value = "/getSearchFilter", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public List<List<SearchFilter>> getSearchFilter() {
 
-        List<List<SearchFilter>> searchFilter = caches.get("searchFilter");
+         List<List<SearchFilter>> searchFilter = caches.get("searchFilter");
 
         if (searchFilter == null) {
             syncCache();

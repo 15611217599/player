@@ -2,8 +2,8 @@ spring:
   jackson:
     time-zone: GMT+8
   datasource:
-    url: jdbc:mysql://localhost:3306/player?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
-    username: player
+    url: jdbc:mysql://106.54.200.146:3306/player?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    username: root
     password: 123456
     #是否初始化数据 never 不  always 是  如果开启了数据强行删除重新初始化,要启动两次,因为jpa查缓存没有,数据不是从jpa插入的
     initialization-mode: never
@@ -25,7 +25,7 @@ config:
   isLoadAllVideo: false
 
   #启动后立即执行视频音乐的更新功能,正常有定时任务每晚2点更新的
-  isLoadUpdate: false
+  isLoadUpdate: true
 
   #是否启用会员机制
   isShowPay: false
