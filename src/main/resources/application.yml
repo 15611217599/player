@@ -6,13 +6,13 @@ spring:
     username: root
     password: sunhongchaoqQ
     #是否初始化数据 never 不  always 是  如果开启了数据强行删除重新初始化,要启动两次,因为jpa查缓存没有,数据不是从jpa插入的
-    initialization-mode: always
+    initialization-mode: never
     #初始化的数据
     data: classpath:category.sql
     sql-script-encoding: utf-8
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         show_sql: false
@@ -22,7 +22,7 @@ spring:
 
 config:
   #是否开启所有视频下载 true 是 false 否
-  isLoadAllVideo: true
+  isLoadAllVideo: false
 
   #启动后立即执行视频音乐的更新功能,正常有定时任务每晚2点更新的
   isLoadUpdate: true

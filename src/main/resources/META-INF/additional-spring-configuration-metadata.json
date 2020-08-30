@@ -1,0 +1,22 @@
+{
+  "properties": [
+    {
+      "name": "config.isLoadAllVideo",
+      "type": "java.lang.String",
+      "sourceType": "com.sun.player.syncServer.SyncServer",
+      "description": "Description for config.isLoadAllVideo."
+    },
+    {
+      "name": "config.isLoadUpdate",
+      "type": "java.lang.String",
+      "sourceType": "com.sun.player.syncServer.SyncServer",
+      "description": "Description for config.isLoadUpdate."
+    },
+    {
+      "name": "config.isShowPay",
+      "type": "java.lang.String",
+      "sourceType": "com.sun.player.webService.util.UserInfoRest.isShowPay",
+      "description": "Description for config.isShowPay."
+    }
+  ]
+}
